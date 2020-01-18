@@ -21,8 +21,11 @@ get_pdf_link <- function(page_url) {
     html_attrs() %>%
     map(pluck, "href") %>%
     discard(is.null) %>%
-    keep(~str_detect(.x, "-[a-z]+-[0-9]{4}.pdf$")) %>%
+    keep(~str_detect(.x, "quarterly|quartlery|remote-roviana|quartery")) %>%
+    keep(~str_detect(.x, "pdf$")) %>%
     unlist()
+
+  if(is.null(pdf_link)) stop("could not get pdf from ", page_url)
 
   pdf_link
 

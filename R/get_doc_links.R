@@ -21,6 +21,6 @@ page_urls <-
   unlist() %>%
   paste0(root, .)
 
-  page_urls
+  unique(page_urls)
 
 }
