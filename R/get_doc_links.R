@@ -9,15 +9,38 @@
 ##' @export
 get_doc_links <- function() {
 
-  root <- "https://wwww.environment.gov.au"
-  page <- read_html("https://www.environment.gov.au/climate-change/climate-science-data/greenhouse-gas-measurement/publications#quarterly")
+  root <- "https://www.environment.gov.au"
+  menu <- read_html("https://www.environment.gov.au/climate-change/climate-science-data/greenhouse-gas-measurement/publications#quarterly")
 
-  html_nodes(page, css = "li") %>%
+page_urls <-
+  html_nodes(menu, css = "li") %>%
+  html_nodes(css = "a") %>%
+  html_attrs() %>%
+  map(pluck, "href") %>%
+  keep(~str_detect(.x, "quarterly-update")) %>%
+  unlist() %>%
+  paste0(root, .)
+
+  page_urls
+
+}
+
+get_pdf_link <- function(page_url) {
+
+  on.exit(Sys.sleep(2))
+
+  pdf_page <-
+    read_html(page_url) 
+
+  pdf_link <- 
+    pdf_page %>%
     html_nodes(css = "a") %>%
     html_attrs() %>%
     map(pluck, "href") %>%
-    keep(~grepl("quarterly-update", .x)) %>%
-    unlist() %>%
-    paste0(root, .)
+    discard(is.null) %>%
+    keep(~str_detect(.x, "-[a-z]+-[0-9]{4}.pdf$")) %>%
+    unlist()
+
+  pdf_link
 
 }
